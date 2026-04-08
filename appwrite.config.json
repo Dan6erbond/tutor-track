@@ -363,6 +363,15 @@
                     "twoWayKey": "paymentConfirmations",
                     "onDelete": "setNull",
                     "side": "parent"
+                },
+                {
+                    "key": "fileId",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 32,
+                    "default": null,
+                    "encrypt": false
                 }
             ],
             "indexes": []

@@ -40,3 +40,28 @@ export function useCreateConfirmationMutation() {
     },
   });
 }
+
+export function useUpdateConfirmationMutation() {
+  const { tables } = useAppwrite();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<ModelCreate<PaymentConfirmations>>;
+    }) =>
+      tables.updateRow<ModelCreate<PaymentConfirmations>>({
+        databaseId,
+        tableId: tableIds.paymentConfirmations,
+        rowId: id,
+        data,
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["confirmations"] });
+      queryClient.setQueryData(["confirmations", data.$id], data);
+    },
+  });
+}

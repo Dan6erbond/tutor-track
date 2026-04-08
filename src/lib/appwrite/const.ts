@@ -14,4 +14,4 @@ export const teamIds = {
   admins: import.meta.env.VITE_ADMIN_TEAM_ID,
 };
 
-export const bucketId = import.meta.env.VITE_BUCKET_ID;
+export const bucketId = "tutor-track";

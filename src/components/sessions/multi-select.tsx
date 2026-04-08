@@ -1,8 +1,6 @@
-"use client";
-
 import { CalendarDays, Clock } from "lucide-react";
+import { Chip, Label, ListBox, Select, Spinner, Tag } from "@heroui/react";
 import { Collection, ListBoxLoadMoreItem } from "react-aria-components";
-import { Label, ListBox, Select, Spinner, Tag } from "@heroui/react";
 
 import type { Key } from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -41,25 +39,29 @@ export function SessionMultiSelect({
       <Select.Trigger className="min-h-14 h-auto py-2">
         <Select.Value>
           {({ isPlaceholder, state, defaultChildren }) => {
+            // 1. Check placeholder/empty state first to ensure Trigger has click target
             if (isPlaceholder || state.selectedItems.length === 0) {
               return defaultChildren;
             }
 
             return (
               <div className="flex flex-wrap gap-1">
-                {Array.from(state.selectedItems).map((item) => {
+                {state.selectedItems.map((item) => {
                   const session = allSessions.find((s) => s.$id === item.key);
+
                   return (
-                    <Tag
+                    <Chip
                       key={item.key}
-                      variant="surface"
-                      className="font-bold bg-accent-soft text-accent"
+                      variant="primary"
+                      className="bg-accent-soft text-accent"
                       size="sm"
                     >
-                      {session
-                        ? new Date(session.date).toLocaleDateString()
-                        : "..."}
-                    </Tag>
+                      <Chip.Label className="font-bold">
+                        {session
+                          ? new Date(session.date).toLocaleDateString()
+                          : "..."}
+                      </Chip.Label>
+                    </Chip>
                   );
                 })}
               </div>
@@ -70,13 +72,15 @@ export function SessionMultiSelect({
       </Select.Trigger>
 
       <Select.Popover>
-        <ListBox
-          aria-label="Sessions list"
-          className="max-h-75"
-          selectionMode="multiple"
-        >
+        <ListBox aria-label="Sessions list" className="max-h-75">
+          {isLoading && (
+            <ListBox.Item id="loading" className="flex justify-center p-4">
+              <Spinner size="sm" color="accent" />
+            </ListBox.Item>
+          )}
+
           <Collection items={allSessions}>
-            {(session: any) => (
+            {(session) => (
               <ListBox.Item
                 id={session.$id}
                 textValue={session.date}
@@ -98,21 +102,16 @@ export function SessionMultiSelect({
           </Collection>
 
           <ListBoxLoadMoreItem
-            isLoading={isLoading || isFetchingNextPage}
+            isLoading={isFetchingNextPage}
             onLoadMore={() => hasNextPage && fetchNextPage()}
           >
-            <div className="flex flex-col items-center justify-center gap-2 py-4">
-              {hasNextPage || isLoading ? (
-                <>
-                  <Spinner size="sm" color="accent" />
-                  <span className="text-xs text-muted">
-                    Loading sessions...
-                  </span>
-                </>
-              ) : (
-                <div className="h-2" />
-              )}
-            </div>
+            {hasNextPage ? (
+              <div className="flex justify-center py-2">
+                <Spinner size="sm" color="accent" />
+              </div>
+            ) : (
+              <div className="h-2" />
+            )}
           </ListBoxLoadMoreItem>
         </ListBox>
       </Select.Popover>

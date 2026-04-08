@@ -28,3 +28,18 @@ export function useConfirmationsQueryOptions() {
     enabled: !!user?.$id,
   });
 }
+
+export function useConfirmationQueryOptions(confirmationId: string) {
+  const { tables } = useAppwrite();
+
+  return queryOptions({
+    queryKey: ["confirmations", confirmationId],
+    queryFn: () =>
+      tables.getRow<PaymentConfirmations>({
+        databaseId,
+        tableId: tableIds.paymentConfirmations,
+        rowId: confirmationId,
+        queries: [Query.select(["*", "student.*", "template.*", "sessions.*"])],
+      }),
+  });
+}

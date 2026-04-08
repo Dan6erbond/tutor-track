@@ -38,6 +38,7 @@ export type PaymentConfirmations = Models.Row & {
     template: DocumentTemplates;
     sessions: TutoringSessions[];
     student: Students;
+    fileId: string | null;
 }
 
 export type DocumentTemplates = Models.Row & {
