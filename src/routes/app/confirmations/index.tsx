@@ -5,6 +5,7 @@ import {
   Label,
   ListBox,
   Select,
+  Skeleton,
   type Key,
 } from "@heroui/react";
 import { ChevronRight, FileCheck, Plus } from "lucide-react";
@@ -15,7 +16,7 @@ import { useCreateConfirmationMutation } from "@/mutations/confirmations";
 import { useConfirmationsQueryOptions } from "@/queries/confirmations";
 import { useTemplatesQueryOptions } from "@/queries/templates";
 import { useForm } from "@tanstack/react-form";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
@@ -32,10 +33,14 @@ export const Route = createFileRoute("/app/confirmations/")({
 
 function ConfirmationsPage() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: confirmations } = useSuspenseQuery(
+
+  const { data: confirmations, isLoading: isLoadingConfirmations } = useQuery(
     useConfirmationsQueryOptions(),
   );
-  const { data: templates } = useSuspenseQuery(useTemplatesQueryOptions());
+  const { data: templates, isLoading: isLoadingTemplates } = useQuery(
+    useTemplatesQueryOptions(),
+  );
+
   const createMutation = useCreateConfirmationMutation();
 
   const form = useForm({
@@ -66,33 +71,49 @@ function ConfirmationsPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {confirmations.map((conf) => (
-          <Link
-            key={conf.$id}
-            to="/app/confirmations/$confirmationId"
-            params={{ confirmationId: conf.$id }}
-            className="group block"
-          >
-            <Card className="bg-accent-soft/20 border-none shadow-none group-hover:bg-accent-soft/40 transition-colors cursor-pointer">
-              <Card.Header className="flex flex-row items-center justify-between p-4">
+        {isLoadingConfirmations
+          ? // Loading Skeletons for Grid
+            Array.from({ length: 6 }).map((_, i) => (
+              <Card
+                key={i}
+                className="bg-accent-soft/10 border-none shadow-none p-4"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center font-bold shrink-0">
-                    {conf.student?.name?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col items-start overflow-hidden text-left">
-                    <Card.Title className="text-sm font-bold truncate w-full">
-                      {conf.student?.name}
-                    </Card.Title>
-                    <Card.Description className="text-xs truncate w-full">
-                      {conf.template?.name}
-                    </Card.Description>
+                  <Skeleton className="size-10 rounded-xl" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-3 w-1/2 rounded-lg" />
+                    <Skeleton className="h-2 w-1/3 rounded-lg" />
                   </div>
                 </div>
-                <ChevronRight className="size-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" />
-              </Card.Header>
-            </Card>
-          </Link>
-        ))}
+              </Card>
+            ))
+          : confirmations?.map((conf) => (
+              <Link
+                key={conf.$id}
+                to="/app/confirmations/$confirmationId"
+                params={{ confirmationId: conf.$id }}
+                className="group block"
+              >
+                <Card className="bg-accent-soft/20 border-none shadow-none group-hover:bg-accent-soft/40 transition-colors cursor-pointer">
+                  <Card.Header className="flex flex-row items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center font-bold shrink-0">
+                        {conf.student?.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex flex-col items-start overflow-hidden text-left">
+                        <Card.Title className="text-sm font-bold truncate w-full">
+                          {conf.student?.name}
+                        </Card.Title>
+                        <Card.Description className="text-xs truncate w-full">
+                          {conf.template?.name}
+                        </Card.Description>
+                      </div>
+                    </div>
+                    <ChevronRight className="size-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" />
+                  </Card.Header>
+                </Card>
+              </Link>
+            ))}
       </div>
 
       <Drawer isOpen={isOpen} onOpenChange={setIsOpen}>
@@ -129,16 +150,19 @@ function ConfirmationsPage() {
                         value={field.state.value as Key}
                         onChange={(key) => field.handleChange(key as string)}
                         isInvalid={!!field.state.meta.errors.length}
+                        isDisabled={isLoadingTemplates}
                       >
                         <Label className="font-bold text-xs uppercase text-accent">
-                          Template
+                          {isLoadingTemplates
+                            ? "Loading Templates..."
+                            : "Template"}
                         </Label>
                         <Select.Trigger className="h-14">
                           <Select.Value />
                           <Select.Indicator />
                         </Select.Trigger>
                         <Select.Popover>
-                          <ListBox items={templates}>
+                          <ListBox items={templates || []}>
                             {(t) => (
                               <ListBox.Item id={t.$id} textValue={t.name}>
                                 {t.name}
