@@ -22,6 +22,7 @@ import { Route as AppTemplatesNewRouteImport } from './routes/app/templates/new'
 import { Route as AppTemplatesTemplateIdRouteImport } from './routes/app/templates/$templateId'
 import { Route as AppSessionsSessionIdRouteImport } from './routes/app/sessions/$sessionId'
 import { Route as AppConfirmationsConfirmationIdRouteImport } from './routes/app/confirmations/$confirmationId'
+import { Route as ApiFilesIdRouteImport } from './routes/api/files/$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -89,6 +90,11 @@ const AppConfirmationsConfirmationIdRoute =
     path: '/confirmations/$confirmationId',
     getParentRoute: () => AppRoute,
   } as any)
+const ApiFilesIdRoute = ApiFilesIdRouteImport.update({
+  id: '/api/files/$id',
+  path: '/api/files/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/app/students': typeof AppStudentsRoute
   '/app/subjects': typeof AppSubjectsRoute
   '/app/': typeof AppIndexRoute
+  '/api/files/$id': typeof ApiFilesIdRoute
   '/app/confirmations/$confirmationId': typeof AppConfirmationsConfirmationIdRoute
   '/app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/app/templates/$templateId': typeof AppTemplatesTemplateIdRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/app/students': typeof AppStudentsRoute
   '/app/subjects': typeof AppSubjectsRoute
   '/app': typeof AppIndexRoute
+  '/api/files/$id': typeof ApiFilesIdRoute
   '/app/confirmations/$confirmationId': typeof AppConfirmationsConfirmationIdRoute
   '/app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/app/templates/$templateId': typeof AppTemplatesTemplateIdRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/app/students': typeof AppStudentsRoute
   '/app/subjects': typeof AppSubjectsRoute
   '/app/': typeof AppIndexRoute
+  '/api/files/$id': typeof ApiFilesIdRoute
   '/app/confirmations/$confirmationId': typeof AppConfirmationsConfirmationIdRoute
   '/app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/app/templates/$templateId': typeof AppTemplatesTemplateIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/subjects'
     | '/app/'
+    | '/api/files/$id'
     | '/app/confirmations/$confirmationId'
     | '/app/sessions/$sessionId'
     | '/app/templates/$templateId'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/subjects'
     | '/app'
+    | '/api/files/$id'
     | '/app/confirmations/$confirmationId'
     | '/app/sessions/$sessionId'
     | '/app/templates/$templateId'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/app/students'
     | '/app/subjects'
     | '/app/'
+    | '/api/files/$id'
     | '/app/confirmations/$confirmationId'
     | '/app/sessions/$sessionId'
     | '/app/templates/$templateId'
@@ -186,6 +198,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiFilesIdRoute: typeof ApiFilesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConfirmationsConfirmationIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/files/$id': {
+      id: '/api/files/$id'
+      path: '/api/files/$id'
+      fullPath: '/api/files/$id'
+      preLoaderRoute: typeof ApiFilesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -316,6 +336,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiFilesIdRoute: ApiFilesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
