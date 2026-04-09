@@ -203,7 +203,7 @@ export function DashboardPage() {
 
         {/* Sidebar: Quick Stats/Actions */}
         <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
             <div className="p-5 rounded-2xl border border-divider bg-background/50 backdrop-blur-sm flex items-center gap-4 hover:border-accent/30 transition-colors">
               <div className="size-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shadow-inner">
                 <Users size={24} />
