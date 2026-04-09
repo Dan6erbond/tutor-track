@@ -151,7 +151,7 @@ export function SubjectCard({ subject }: SubjectCardProps) {
                   </form.Field>
 
                   <div className="flex flex-col gap-3">
-                    <Label className="font-bold text-xs uppercase text-accent">
+                    <Label className="font-bold text-xs uppercase text-accent tracking-widest">
                       Identification Color
                     </Label>
                     <ColorPicker
@@ -161,15 +161,15 @@ export function SubjectCard({ subject }: SubjectCardProps) {
                       <ColorPicker.Trigger>
                         <Button
                           variant="secondary"
-                          className="justify-between h-14 rounded-xl w-full"
+                          className="justify-between h-14 rounded-2xl w-full border-2 border-transparent hover:border-divider transition-all"
                         >
                           <div className="flex items-center gap-3">
                             <ColorSwatch
                               color={selectedColor.toString("css")}
-                              className="rounded-lg"
+                              className="rounded-lg size-6"
                             />
-                            <span className="font-mono font-bold uppercase">
-                              {selectedColor.toString("hex")}
+                            <span className="font-mono font-black text-sm">
+                              {selectedColor.toString("hex").toUpperCase()}
                             </span>
                           </div>
                           <Palette className="size-4 text-muted-foreground" />

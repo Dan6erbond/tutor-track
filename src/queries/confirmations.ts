@@ -20,7 +20,7 @@ export function useConfirmationsQueryOptions() {
         queries: [
           Query.equal("userId", user.$id),
           Query.orderDesc("$createdAt"),
-          Query.select(["*", "student.*", "template.*"]),
+          Query.select(["*", "student.*", "template.name", "template.userId"]),
         ],
       });
       return response.rows;

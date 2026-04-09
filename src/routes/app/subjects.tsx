@@ -112,7 +112,7 @@ function SubjectsPage() {
 
   return (
     <>
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-accent px-3 py-1 bg-accent/10 w-fit rounded-full">
             <BookOpen className="size-4" />
@@ -128,21 +128,17 @@ function SubjectsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="bg-background px-6 py-3 rounded-2xl border-2 border-accent-soft-hover flex items-center gap-4 shadow-sm">
-            <div className="text-right">
-              <p className="text-[10px] uppercase font-black text-accent mb-1">
-                Total
-              </p>
-              <p className="text-3xl font-black tabular-nums">{totalCount}</p>
-            </div>
-            <div className="size-10 rounded-xl bg-accent/10 flex items-center justify-center">
-              <Library className="size-6 text-accent" />
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex bg-muted/20 px-4 py-2 rounded-2xl border border-divider items-center gap-3">
+            <Library className="size-4 text-muted-foreground" />
+            <span className="text-sm font-bold tabular-nums text-foreground">
+              {totalCount} Total
+            </span>
           </div>
           <Button
             onPress={() => setIsDrawerOpen(true)}
-            className="bg-accent text-accent-foreground font-bold h-14 px-6 rounded-2xl shadow-lg shadow-accent-soft-hover"
+            variant="primary"
+            className="bg-accent text-accent-foreground font-bold h-14 px-8 rounded-2xl shadow-lg shadow-accent/20 flex-1 sm:flex-none"
           >
             <Plus className="size-5 mr-1" /> New Subject
           </Button>
@@ -165,19 +161,19 @@ function SubjectsPage() {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {allSubjects.map((subject) => (
             <SubjectCard key={subject.$id} subject={subject} />
           ))}
 
-          {/* Infinite Scroll Trigger */}
+          {/* Infinite Scroll Trigger with properly sized skeletons */}
           {hasNextPage && (
             <div
               ref={loaderRef as Ref<HTMLDivElement>}
-              className="grid gap-4 col-span-full"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 col-span-full w-full"
             >
-              {[...Array(2)].map((_, i) => (
-                <Skeleton key={i} className="h-24 w-full rounded-3xl" />
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
               ))}
             </div>
           )}
@@ -230,7 +226,7 @@ function SubjectsPage() {
                 </form.Field>
 
                 <div className="flex flex-col gap-3">
-                  <Label className="font-bold text-xs uppercase text-accent">
+                  <Label className="font-bold text-xs uppercase text-accent tracking-widest">
                     Identification Color
                   </Label>
                   <ColorPicker
@@ -240,14 +236,14 @@ function SubjectsPage() {
                     <ColorPicker.Trigger>
                       <Button
                         variant="secondary"
-                        className="justify-between h-14 rounded-xl w-full"
+                        className="justify-between h-14 rounded-2xl w-full border-2 border-transparent hover:border-divider transition-all"
                       >
                         <div className="flex items-center gap-3">
                           <ColorSwatch
                             color={selectedColor.toString("css")}
-                            className="rounded-lg"
+                            className="rounded-lg size-6"
                           />
-                          <span className="font-mono font-bold">
+                          <span className="font-mono font-black text-sm">
                             {selectedColor.toString("hex").toUpperCase()}
                           </span>
                         </div>
@@ -285,20 +281,21 @@ function SubjectsPage() {
                   <Button
                     type="submit"
                     form="subject-form"
-                    className="w-full bg-accent text-accent-foreground font-black h-12 rounded-xl"
+                    variant="primary"
+                    className="w-full font-black h-14 rounded-2xl shadow-xl shadow-accent/10"
                     isDisabled={!canSubmit}
                     isPending={isSubmitting || createSubjectMutation.isPending}
                   >
-                    Save Subject
+                    Create Subject
                   </Button>
                 )}
               </form.Subscribe>
               <Button
                 variant="ghost"
                 onPress={() => setIsDrawerOpen(false)}
-                className="w-full font-bold"
+                className="w-full font-bold h-12 rounded-xl text-muted-foreground hover:text-foreground"
               >
-                Cancel
+                Discard
               </Button>
             </Drawer.Footer>
           </Drawer.Dialog>

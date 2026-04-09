@@ -30,8 +30,14 @@ export function StudentCard({ student }: StudentCardProps) {
       name: student.name,
       email: student.email || "",
     },
-    onSubmit: async ({ value }) => {
-      await updateStudent.mutateAsync({ id: student.$id, data: value });
+    onSubmit: async ({ value: { email, ...value } }) => {
+      await updateStudent.mutateAsync({
+        id: student.$id,
+        data: {
+          ...value,
+          email: (email || null) as string,
+        },
+      });
       setIsEditOpen(false);
     },
   });

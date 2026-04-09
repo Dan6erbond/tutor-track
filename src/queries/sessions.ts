@@ -109,3 +109,39 @@ export function useSessionQueryOptions(sessionId: string) {
     enabled: !!sessionId,
   });
 }
+
+interface SessionCountOptions {
+  unpaidOnly?: boolean;
+}
+
+export function useTutoringSessionsCountOptions({
+  unpaidOnly = false,
+}: SessionCountOptions = {}) {
+  const { tables } = useAppwrite();
+  const { user } = useAuth();
+
+  return queryOptions({
+    queryKey: ["tutoring-sessions", "count", user?.$id, { unpaidOnly }],
+    queryFn: async () => {
+      if (!user?.$id) return { rows: [], total: 0 };
+
+      const queries = [
+        Query.equal("userId", user.$id),
+        Query.limit(1), // Minimal overhead for count
+      ];
+
+      if (unpaidOnly) {
+        queries.push(Query.isNull("paidAt"));
+        queries.push(Query.isNotNull("completedAt")); // Only count completed, unpaid sessions
+        queries.push(Query.isNull("cancelledAt"));
+      }
+
+      return await tables.listRows<TutoringSessions>({
+        databaseId,
+        tableId: tableIds.tutoringSessions,
+        queries,
+      });
+    },
+    enabled: !!user?.$id,
+  });
+}

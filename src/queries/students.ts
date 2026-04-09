@@ -1,8 +1,8 @@
 import { databaseId, tableIds } from "@/lib/appwrite/const";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 
 import { Query } from "appwrite";
 import type { Students } from "@/lib/appwrite/types";
-import { infiniteQueryOptions } from "@tanstack/react-query";
 import { useAppwrite } from "@/contexts/appwrite";
 import { useAuth } from "@/contexts/auth";
 
@@ -43,6 +43,33 @@ export function useStudentsInfiniteQueryOptions(search: string = "") {
     getNextPageParam: (lastPage, allPages) => {
       const currentOffset = allPages.length * limit;
       return currentOffset < lastPage.total ? currentOffset : undefined;
+    },
+    enabled: !!user?.$id,
+  });
+}
+
+interface StudentsOptions {
+  limit?: number;
+}
+
+export function useStudentsQueryOptions({ limit = 25 }: StudentsOptions = {}) {
+  const { tables } = useAppwrite();
+  const { user } = useAuth();
+
+  return queryOptions({
+    queryKey: ["students", user?.$id, { limit }],
+    queryFn: async () => {
+      if (!user?.$id) return { rows: [], total: 0 };
+
+      return await tables.listRows<Students>({
+        databaseId,
+        tableId: tableIds.students,
+        queries: [
+          Query.equal("userId", user.$id),
+          Query.isNull("archivedAt"),
+          Query.limit(limit),
+        ],
+      });
     },
     enabled: !!user?.$id,
   });
