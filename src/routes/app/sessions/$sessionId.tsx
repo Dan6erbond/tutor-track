@@ -87,6 +87,28 @@ function SessionDetailPage() {
     }
   }, [session, form]);
 
+  const handleToggleComplete = () => {
+    const isCompleted = !!session?.completedAt;
+    updateMutation.mutate({
+      sessionId,
+      data: {
+        completedAt: isCompleted ? null : new Date().toISOString(),
+        cancelledAt: null, // Clear cancellation if marking complete
+      },
+    });
+  };
+
+  const handleToggleCancel = () => {
+    const isCancelled = !!session?.cancelledAt;
+    updateMutation.mutate({
+      sessionId,
+      data: {
+        cancelledAt: isCancelled ? null : new Date().toISOString(),
+        completedAt: null, // Clear completion if cancelling
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -121,7 +143,54 @@ function SessionDetailPage() {
         </Button>
       </div>
 
-      <Card className="p-8 rounded-[40px] border-none shadow-2xl shadow-accent/5 bg-background/60 backdrop-blur-md">
+      <Card
+        className={`p-8 rounded-[40px] border-none shadow-2xl shadow-accent/5 transition-all duration-500
+          ${session?.cancelledAt ? "bg-danger/5 grayscale-[0.5]" : "bg-background/60 backdrop-blur-md"}`}
+      >
+        {/* Quick Status Actions */}
+        <div className="flex flex-wrap gap-4 mb-10 pb-10 border-b-2 border-accent/5">
+          <div className="flex-1 space-y-1">
+            <h3 className="font-black text-sm uppercase tracking-wider text-muted-foreground">
+              Session Status
+            </h3>
+            <p className="text-sm font-medium">
+              {session?.completedAt
+                ? "This session is finalized."
+                : session?.cancelledAt
+                  ? "This session was cancelled."
+                  : "This session is currently scheduled."}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <Button
+              onPress={handleToggleCancel}
+              variant={!!session?.cancelledAt ? "primary" : "secondary"}
+              className={`rounded-2xl font-black h-12 px-6 transition-all ${
+                !!session?.cancelledAt
+                  ? "bg-danger text-white shadow-lg shadow-danger-soft-hover"
+                  : "hover:bg-danger/10 hover:text-danger"
+              }`}
+              isPending={updateMutation.isPending}
+            >
+              {session?.cancelledAt ? "Re-activate Session" : "Cancel Session"}
+            </Button>
+
+            <Button
+              onPress={handleToggleComplete}
+              variant={!!session?.completedAt ? "primary" : "secondary"}
+              className={`rounded-2xl font-black h-12 px-6 transition-all ${
+                !!session?.completedAt
+                  ? "bg-success text-white shadow-lg shadow-success-soft-hover"
+                  : "hover:bg-success/10 hover:text-success"
+              }`}
+              isPending={updateMutation.isPending}
+            >
+              {session?.completedAt ? "Mark Incomplete" : "Mark Completed"}
+            </Button>
+          </div>
+        </div>
+
         <form
           id="session-form"
           onSubmit={(e) => {
