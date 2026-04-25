@@ -21,6 +21,7 @@ import { PdfUploadDropzone } from "@/components/templates/pdf-upload-dropzone";
 import { useAppwrite } from "@/contexts/appwrite";
 import plugins from "@/lib/pdfme/plugins";
 import { useCreateTemplateMutation } from "@/mutations/templates";
+import type { DocumentTemplates } from "@/lib/appwrite/types";
 
 export const Route = createFileRoute("/app/templates/new")({
   component: NewTemplatePage,
@@ -47,8 +48,8 @@ function NewTemplatePage() {
       template: {
         schemas: [[]],
         basePdf: BLANK_A4_PDF,
-      } as Template,
-    },
+      } satisfies Template,
+    } as { name: string; template: Template },
     onSubmit: async ({ value }) => {
       const user = await account.get();
       await createMutation.mutateAsync({
@@ -194,7 +195,7 @@ function NewTemplatePage() {
       </div>
 
       <TemplateDesigner
-        template={form.getFieldValue("template")}
+        initialTemplate={form.getFieldValue("template")}
         onChange={(t) => form.setFieldValue("template", t)}
         onInstanceReady={(instance) => {
           designerRef.current = instance;

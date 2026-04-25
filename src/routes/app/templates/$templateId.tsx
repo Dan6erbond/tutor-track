@@ -18,7 +18,6 @@ import { TemplateDesigner } from "@/components/templates/designer";
 import { PdfUploadDropzone } from "@/components/templates/pdf-upload-dropzone";
 import { useUpdateTemplateMutation } from "@/mutations/templates";
 import { useTemplateQueryOptions } from "@/queries/templates";
-
 export const Route = createFileRoute("/app/templates/$templateId")({
   component: EditTemplatePage,
 });
@@ -35,6 +34,8 @@ function EditTemplatePage() {
     useTemplateQueryOptions(templateId),
   );
 
+  const template = JSON.parse(templateData.template) as Template;
+
   const updateMutation = useMutation({
     ...useUpdateTemplateMutation(templateId),
     onSuccess: () => {
@@ -44,9 +45,9 @@ function EditTemplatePage() {
 
   const form = useForm({
     defaultValues: {
-      name: templateData.name,
-      template: JSON.parse(templateData.template) as Template,
-    },
+      ...templateData,
+      template,
+    } as { name: string; template: Template },
     onSubmit: async ({ value }) => {
       await updateMutation.mutateAsync({
         name: value.name,
@@ -165,7 +166,7 @@ function EditTemplatePage() {
       </div>
 
       <TemplateDesigner
-        template={form.getFieldValue("template")}
+        initialTemplate={template}
         onChange={(t) => form.setFieldValue("template", t)}
         onInstanceReady={(instance) => {
           designerRef.current = instance;
